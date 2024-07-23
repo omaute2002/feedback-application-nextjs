@@ -9,6 +9,7 @@ import axios, { AxiosError } from "axios";
 import { ApiResponse } from "@/types/ApiResponse";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
+import Link from "next/link"
 import {
   Form,
   FormControl,
@@ -19,13 +20,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {Loader2} from 'lucide-react'
+import { Loader2 } from "lucide-react";
 
 const VerifyAccount = () => {
   const router = useRouter();
   const params = useParams<{ username: string }>();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [verifyMessage, setVerifyMessage] = useState('')
+  const [verifyMessage, setVerifyMessage] = useState("");
 
   // <{username: string}> this is nothing but the typescript not necessay
   const { toast } = useToast();
@@ -45,7 +46,7 @@ const VerifyAccount = () => {
         title: "Success",
         description: response.data.message,
       });
-      setVerifyMessage(response.data.message)
+      setVerifyMessage(response.data.message);
       router.replace("/sign-in");
     } catch (error) {
       console.error("Error in signup of user", error);
@@ -88,13 +89,23 @@ const VerifyAccount = () => {
                 )}
               />
               <Button type="submit">
-                {isSubmitting ? <>
-                    <Loader2  className="mr-2 h-4 w-4 animate-spin"/>
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Verifying
-                </> : "Verify" }
+                  </>
+                ) : (
+                  "Verify"
+                )}
               </Button>
             </form>
           </Form>
+          <div className="text-center mt-4">
+            <p>Didn't receive the mail? Please sign up again </p>
+            <Link href="/sign-up" className="text-blue-600 hover:text-blue-800">
+              Sign In
+            </Link>
+          </div>
         </div>
       </div>
     </>
