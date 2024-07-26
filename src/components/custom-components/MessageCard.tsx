@@ -37,7 +37,7 @@ type MessageCardProps ={
 // succesfull deletion of the message the parent dashboard UI component
 // will remove that message with the message._id that is passed in the function args
 
-export const MessageCard = ({message, onMessageDelete}) => {
+export const MessageCard = ({key ,message, onMessageDelete}) => {
 
     const {toast} = useToast();
     const handleDeleteConfirm = async () => {
@@ -48,15 +48,17 @@ export const MessageCard = ({message, onMessageDelete}) => {
         })
         onMessageDelete(message._id);
     }
+
+
   return (
     <>
       <div>
-        <Card>
+        <Card className="h-auto w-auto">
           <CardHeader>
-            <CardTitle>Card Title</CardTitle>
+            <CardTitle>{message.content}</CardTitle>
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="destructive"><X className="w-5 h-5"/></Button>
+                <Button className="w-11 mt-6  justify-center" variant="destructive"><X /></Button>
               </AlertDialogTrigger> 
               <AlertDialogContent>
                 <AlertDialogHeader>
@@ -72,7 +74,6 @@ export const MessageCard = ({message, onMessageDelete}) => {
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
-            <CardDescription>Card Description</CardDescription>
           </CardHeader>
         </Card>
       </div>

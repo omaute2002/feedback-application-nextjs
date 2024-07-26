@@ -7,6 +7,7 @@ import { authOptions } from "../../auth/[...nextauth]/options";
 
 export async function DELETE(
   request: Request,
+  response:Response,
   { params }: { params: { messageid: string } }
 ) {
   const messageId = params.messageid;
@@ -14,7 +15,7 @@ export async function DELETE(
   const session = await getServerSession(authOptions);
   const user: User = session?.user as User;
   if (!session || !session.user) {
-    return Response.json(
+     Response.json(
       {
         success: false,
         message: "Not Authenticated",

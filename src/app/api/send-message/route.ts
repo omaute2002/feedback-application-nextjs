@@ -7,8 +7,11 @@ import {Message} from "@/model/User"
 export async function POST(request: Request){
     await dbConnect()
 
-    const {username, content}=await request.json()
-    try {
+    const {username, data}=await request.json()
+    console.log(username);
+    const content = data.content
+    console.log("content: ",content)
+    try {   
         const user = await UserModel.findOne({username})
         if(!user){
             return Response.json({
@@ -34,7 +37,7 @@ export async function POST(request: Request){
         return Response.json({
             success: true,
             message:"Message send successfully"
-        }, {status : 401})
+        }, {status : 200})
 
     } catch (error) {
         console.log('An unexpected error occured', error);

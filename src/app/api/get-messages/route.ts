@@ -9,6 +9,7 @@ export async function GET(request: Request) {
 
   const session = await getServerSession(authOptions);
   const user: User = session?.user as User;
+  
   if (!session || !session.user) {
     return Response.json(
       {
@@ -18,15 +19,18 @@ export async function GET(request: Request) {
       { status: 401 }
     );
   }
-
+  
   // NOTE: WHEN USING AGGREGATION PIPELINE IN MONGOOSE
   // WE MUST USE FOLLOWING METHOD TO GET THE USER ID WHICH IS
   // PRESENT IN THE MONGODB DOCUMENT BASED DATABASE
-  const userId = new mongoose.Types.ObjectId(user._id);
+
+  const username = user.username;
+
+    
   try {
-    const user = await UserModel.aggregate([
+    const foundUser = await UserModel.aggregate([
       // Each pipeline in one curly brackets
-      { $match: { id: userId } },
+      { $match: { username: username } },
 
       // 2nd pipeline
       // note: here the messages are saved in the document in the form of array
@@ -57,23 +61,38 @@ export async function GET(request: Request) {
       // and pushed in the messages field
     ]);
 
-    if(!user || user.length === 0){
-        return Response.json(
-            {
-              success: false,
-              message: "user not found",
-            },
-            { status: 401 }
-          );
+
+    if(!foundUser || foundUser.length === 0){
+        // return Response.json(
+        //     {
+        //       success: false,
+        //       message: "user not found",
+        //     },
+        //     { status: 401 }
+        //   );
+        return new Response(
+          JSON.stringify({
+            success: false,
+            messages: "user not found",
+          }),
+          { status: 401 }
+        );
     }
 
-    return Response.json(
-        {
-          success: true,
-          messages: user[0].messages,
-        },
-        { status: 200 }
-      );
+    // return Response.json(
+    //     {
+    //       success: true,
+    //       messages: user[0].messages,
+    //     },
+    //     { status: 200 }
+    //   );
+    return new Response(
+      JSON.stringify({
+        success: true,
+        messages: foundUser[0].messages,
+      }),
+      { status: 200 }
+    );
 
 
 
