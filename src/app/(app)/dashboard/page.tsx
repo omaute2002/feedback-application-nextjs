@@ -57,7 +57,7 @@ const Page = () => {
     // used to set the value of the switch button to accepting messages or not
     setIsSwitchLoading(true);
     try {
-      const response = await axios.get<ApiResponse>("/api/accept-messages");
+      const response = await axios.get<ApiResponse>("/api/accept-message");
       setValue("acceptMessages", response.data.isAcceptingMessage);
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;

@@ -18,6 +18,15 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+
 import { useToast } from "@/components/ui/use-toast";
 import { ApiResponse } from "@/types/ApiResponse";
 import { messageSchema } from "@/schemas/messageSchema";
@@ -28,19 +37,20 @@ const page = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [contentResponse, setContentResponse] = useState("");
   const [suggestedMessages, setSuggestedMessages] = useState([]);
+  const [generatingMessage, setGeneratingMessage] = useState(false);
   const { username } = useParams();
 
   const { toast } = useToast();
   const form = useForm<z.infer<typeof messageSchema>>({
     resolver: zodResolver(messageSchema),
     defaultValues: {
-      content:"",
+      content: "",
     },
   });
   const onSubmit = async (data: z.infer<typeof messageSchema>) => {
     setIsSubmitting(true);
     console.log(data);
-    
+
     try {
       const response = await axios.post("/api/send-message", {
         data,
@@ -65,11 +75,55 @@ const page = () => {
   };
 
   // GET REQUEST TO SUGGEST MESSAGE
-  const getRequest = async () => {
-    setIsSubmitting(true);
+
+  const suggestMessage = async () => {
+    // get request
+    setGeneratingMessage(true);
     try {
-    } catch (error) {}
+      const response = await axios.get("/api/suggest-messages");
+      console.log(response.data);
+      const suggestMessageResponse = response.data.suggestedMessages;
+      const cleanedString = suggestMessageResponse.replace(/^"|"$/g, '').trim();
+
+      const messageArray = cleanedString.split(' || ').map(question => question.trim());
+      
+      // messageArray[0].slice(1);
+      // messageArray[messageArray.length-1].slice(0,-1)
+      // Clean up the last element if it contains an extra quote
+      // if (messageArray.length > 0) {
+      //   const lastIndex = messageArray.length - 1;
+      //   messageArray[lastIndex] = messageArray[lastIndex].replace(
+      //     /\\\"|\"$/,
+      //     ""
+      //   ); // Remove trailing \ or extra "
+
+      //   // Optionally, clean up leading and trailing whitespace
+      //   messageArray[lastIndex] = messageArray[lastIndex].trim();
+      // }
+      // messageArray.pop();
+      console.log(messageArray)
+      setSuggestedMessages(messageArray);
+      // console.log(suggestedMessages);
+    } catch (error) {
+      console.error("Error while generating messages", error);
+      const axiosError = error as AxiosError<ApiResponse>;
+      let errorMessage = axiosError.response?.data.message;
+      toast({
+        title: "Unsuccessfull",
+        description: errorMessage,
+        variant: "destructive",
+      });
+      setGeneratingMessage(false);
+    }
+    setGeneratingMessage(false);
   };
+
+  if (suggestedMessages.length > 0) {
+    for(let i =0;i<suggestedMessages.length;i++){
+      console.log(suggestedMessages[i])
+    }
+    
+  }
 
   return (
     <>
@@ -78,49 +132,116 @@ const page = () => {
           <h1 className="text-3xl md:text-5xl font-bold">
             Public Profile Link
           </h1>
-          
         </section>
-        <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <FormField
-                name="content"
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Send Anonymous Message to @{username}</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Write your anonymous message here"
-                        {...field}
-                        onChange={(e)=>{
-                            field.onChange(e)
-                            setContent(e.target.value)
-                        }}
-                      />
-                    </FormControl>
-                   {content.length <=10 ? (<>
-                    <p className="text-red-500">Message should be atleast 10 characters long</p>
-                   </>) : (<></>)}
-                    <FormMessage />
-
-                  </FormItem>
-                )}
-
-              />
-              <Button type="submit" disabled={isSubmitting || content.length === 0}>
-                {
-                    isSubmitting ? <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin">
-                        Please wait
-                    </Loader2>
-                    </> : "Send Message"
-                }
-              </Button>
-            </form>
-          </Form>
       </main>
+      <div className="ml-44 mr-44">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <FormField
+              name="content"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Send Anonymous Message to @{username}</FormLabel>
+                  <FormControl>
+                    <Input
+                      className="h-16"
+                      placeholder="Write your anonymous message here"
+                      {...field}
+                      onChange={(e) => {
+                        field.onChange(e);
+                        setContent(e.target.value);
+                      }}
+                    />
+                  </FormControl>
+                  {content.length <= 10 ? (
+                    <>
+                      <p className="text-red-500">
+                        Message should be atleast 10 characters long
+                      </p>
+                    </>
+                  ) : (
+                    <></>
+                  )}
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div className="flex justify-center">
+              <Button
+                className="justify-center"
+                type="submit"
+                disabled={isSubmitting || content.length === 0}
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin">
+                      Please wait
+                    </Loader2>
+                  </>
+                ) : (
+                  "Send Message"
+                )}
+              </Button>
+            </div>
+          </form>
+        </Form>
+        <div className="suggest-message mt-16">
+          <Button type="submit" onClick={suggestMessage}>
+            {generatingMessage ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin">
+                  Please wait
+                </Loader2>
+              </>
+            ) : (
+              "Suggest Message"
+            )}
+          </Button>
+        </div>
+        <div className="mt-12">
+          <Card>
+            <CardHeader>
+              <CardTitle>Messages</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {suggestedMessages.length > 0 ? (
+                suggestedMessages.map(( message) => (
+                  <Card  className="mt-4 mb-4">
+                    <CardContent className="mt-6">{message}</CardContent>
+                  </Card>
+                ))
+              ) : (
+                <>
+                  <Card className="mt-4 mb-4">
+                    <CardContent className="mt-6">
+                      suggested message will appear here
+                    </CardContent>
+                  </Card>
+                </>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </>
   );
 };
 
 export default page;
+
+// Card className="mt-4 mb-4">
+//                 <CardContent className="mt-6">
+//                   Hello this is suggested message
+//                 </CardContent>
+//               </Card>
+//               <Card className="mt-4 mb-4">
+//                 <CardContent className="mt-6">
+//                   Hello this is suggested message
+//                 </CardContent>
+//               </Card>
+//               <Card className="mt-4 mb-4">
+//                 <CardContent className="mt-6">
+//                   Hello this is suggested message
+//                 </CardContent>
+//               </Card>

@@ -23,9 +23,10 @@ export async function GET(request: Request) {
        and contribute to a positive and welcoming conversational environment`;
     const result = await model.generateContent(prompt);
     const response = await result.response;
-    console.log(result);
+    // console.log(result);
     
-    const aiMessage = response.text;
+    const aiMessage = response.text();
+    console.log(aiMessage)
     if (!aiMessage) {
       return Response.json(
         {
