@@ -129,12 +129,12 @@ const page = () => {
     <>
       <main className="flex-grow flex flex-col items-center justify-center px-4 md:px-24 py-12">
         <section className="text-center mb-8 md:mb-12">
-          <h1 className="text-3xl md:text-5xl font-bold">
+          <h1 className="text-3xl md:text-5xl font-bold text-white">
             Public Profile Link
           </h1>
         </section>
       </main>
-      <div className="ml-44 mr-44">
+      <div className="ml-44 mr-44 text-white">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
@@ -169,7 +169,7 @@ const page = () => {
             />
             <div className="flex justify-center">
               <Button
-                className="justify-center"
+                className="justify-center bg-blue-600"
                 type="submit"
                 disabled={isSubmitting || content.length === 0}
               >
@@ -187,7 +187,7 @@ const page = () => {
           </form>
         </Form>
         <div className="suggest-message mt-16">
-          <Button type="submit" onClick={suggestMessage}>
+          <Button type="submit"  className="bg-blue-600 hover:bg-blue-500" onClick={suggestMessage}>
             {generatingMessage ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin">

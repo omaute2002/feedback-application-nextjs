@@ -53,7 +53,7 @@ export const MessageCard = ({key ,message, onMessageDelete}) => {
   return (
     <>
       <div>
-        <Card className="h-auto w-auto">
+        <Card className="h-40 w-auto">
           <CardHeader>
             <CardTitle>{message.content}</CardTitle>
             <AlertDialog>

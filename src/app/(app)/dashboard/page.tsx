@@ -159,14 +159,15 @@ const Page = () => {
   return (
     <>
     <Navbar />
-      <div className="my-8 mx-4 md:mx-8 lg:mx-auto p-6 bg-white rounded w-full max-w-6xl">
+    
+      <div className="my-8 mx-4 md:mx-8 lg:mx-auto p-6 bg-white rounded w-full max-w-6xl pt-10 pb-12">
         <h2 className="text-lg font-semibold mb-2">Copy your Unique link</h2>
         <div className="flex items-center">
           <input
             type="text"
             value={profileUrl}
             disabled
-            className="input input-bordered w-full p-2 mr-2"
+            className="input input-bordered w-full p-2 mr-2 bg-gray-100 rounded-lg"
           />
           <Button onClick={copyToClipboard}>Copy</Button>
         </div>
@@ -179,7 +180,7 @@ const Page = () => {
           onCheckedChange={handleSwitchChange}
           disabled={isSwitchLoading}
         />
-        <span className="ml-2">
+        <span className="ml-2 text-white">
           Accept Messages: {acceptMessages ? "on" : "off"}
         </span>
       </div>
